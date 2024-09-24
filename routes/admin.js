@@ -96,7 +96,7 @@ adminRouter.post('/course',adminMiddleware,async function(req,res)  {
     }
 });
 
-adminRouter.post('/updateCourses',async function(req,res)  {
+adminRouter.put('/updateCourses',async function(req,res)  {
     const adminId = req.admin_id;
 
     const { title, description, price, courseId } = req.body;

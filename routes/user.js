@@ -3,6 +3,7 @@ const { userModel, purchaseModel, courseModel } = require("../db");
 const userRouter = Router();
 const bcrypt = require('bcrypt');
 const {z} = require("zod");
+const { userMiddleware } = require("../middleware/userMiddleware");
 const jwt = require("jsonwebtoken");
 const JWT_USER = "dasdsadasd"
 
@@ -75,8 +76,27 @@ userRouter.post('/login',async function(req,res)  {
     }
 });
 
-userRouter.post('/purchases',async function(req,res)  {
-    
+userRouter.post('/purchases',userMiddleware,async function(req,res)  {
+    const userId = req.user_id;
+
+    const purchases = await purchaseModel.find({
+        userId,
+    });
+
+    let purchasedCourseIds = [];
+
+    for (let i = 0; i<purchases.length;i++){ 
+        purchasedCourseIds.push(purchases[i].courseId)
+    }
+
+    const coursesData = await courseModel.find({
+        _id: { $in: purchasedCourseIds }
+    })
+
+    res.json({
+        purchases,
+        coursesData
+    })
 });
 
 module.exports = {
